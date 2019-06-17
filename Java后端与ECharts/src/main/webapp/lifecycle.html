@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备2400故障预测系统</title>
+
+    <!-- 引入 ECharts 文件 -->
+    <script src="https://cdn.bootcss.com/echarts/3.7.1/echarts.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+    <SCRIPT src="js/jquery.js"></SCRIPT>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/theme/dark.js"></script>
+</head>
+
+<body bgcolor="black">
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<!--<div id="main1" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main2" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main3" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main4" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main5" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main6" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main7" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main8" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main9" style="width: 1000px;height:800px;"></div>-->
+<!--<div id="main10" style="width: 1000px;height:800px;"></div>-->
+
+<p style="color:white;font-size: 30px;" align="center">设备2400性能监控与故障警告系统</p>
+
+<table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td><div id="main1" style="width: 900px;height:600px;"></div></td>
+        <td><div id="main2" style="width: 920px;height:600px;"></div></td>
+    </tr>
+    <tr>
+        <td><div id="main3" style="width: 900px;height:600px;"></div></td>
+        <td><div id="main4" style="width: 920px;height:600px;"></div></td>
+    </tr>
+    <tr>
+        <td><div id="main5" style="width: 900px;height:600px;"></div></td>
+        <td><div id="main6" style="width: 920px;height:600px;"></div></td>
+    </tr>
+    <tr>
+        <td><div id="main7" style="width: 900px;height:600px;"></div></td>
+        <td><div id="main8" style="width: 920px;height:600px;"></div></td>
+    </tr>
+    <tr>
+        <td><div id="main9" style="width: 900px;height:600px;"></div></td>
+        <td><div id="main10" style="width: 920px;height:600px;"></div></td>
+    </tr>
+</table>
+
+
+
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart1 = echarts.init(document.getElementById('main1'), 'dark');
+    var myChart2 = echarts.init(document.getElementById('main2'), 'dark');
+    var myChart3 = echarts.init(document.getElementById('main3'), 'dark');
+    var myChart4 = echarts.init(document.getElementById('main4'), 'dark');
+    var myChart5 = echarts.init(document.getElementById('main5'), 'dark');
+    var myChart6 = echarts.init(document.getElementById('main6'), 'dark');
+    var myChart7 = echarts.init(document.getElementById('main7'), 'dark');
+    var myChart8 = echarts.init(document.getElementById('main8'), 'dark');
+    var myChart9 = echarts.init(document.getElementById('main9'), 'dark');
+    var myChart10 = echarts.init(document.getElementById('main10'), 'dark');
+
+
+    // ------------------------ 渐变图  性能指标 ------------------------
+
+    option1 = {
+        // Make gradient line here
+        visualMap: [{
+            show: false,
+            type: 'continuous',
+            seriesIndex: 0,
+            min: 0,
+            max: 400
+        }, {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 1,
+            dimension: 0,
+            min: 0,
+            max: 61
+        }],
+
+
+        title: [{
+            left: 'center',
+            text: 'net_droppedTx_summation 网络传输丢包'
+        }, {
+            top: '55%',
+            left: 'center',
+            text: 'net_packetsTx_summation 网络传输'
+        }],
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: [{
+            // data: dateList
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })()
+        }, {
+            // data: dateList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            gridIndex: 1
+        }],
+        yAxis: [{
+            splitLine: {show: false}
+        }, {
+            splitLine: {show: false},
+            gridIndex: 1
+        }],
+        grid: [{
+            bottom: '60%'
+        }, {
+            top: '60%'
+        }],
+        series: [{
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].net_droppedTx_summation));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+        }, {
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].net_packetsTx_summation));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            xAxisIndex: 1,
+            yAxisIndex: 1
+        }]
+    };
+
+    option2 = {
+        // Make gradient line here
+        visualMap: [{
+            show: false,
+            type: 'continuous',
+            seriesIndex: 0,
+            min: 0,
+            max: 400
+        }, {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 1,
+            dimension: 0,
+            min: 0,
+            max: 61
+        }],
+
+
+        title: [{
+            left: 'center',
+            text: 'virtualDisk_numberReadAveraged_average 磁盘每秒读请求数'
+        }, {
+            top: '55%',
+            left: 'center',
+            text: 'virtualDisk_numberWriteAveraged_average 磁盘每秒写请求数'
+        }],
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: [{
+            // data: dateList
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })()
+        }, {
+            // data: dateList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            gridIndex: 1
+        }],
+        yAxis: [{
+            splitLine: {show: false}
+        }, {
+            splitLine: {show: false},
+            gridIndex: 1
+        }],
+        grid: [{
+            bottom: '60%'
+        }, {
+            top: '60%'
+        }],
+        series: [{
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].virtualDisk_numberReadAveraged_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+        }, {
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].virtualDisk_numberWriteAveraged_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            xAxisIndex: 1,
+            yAxisIndex: 1
+        }]
+    };
+
+
+    option3 = {
+        // Make gradient line here
+        visualMap: [{
+            show: false,
+            type: 'continuous',
+            seriesIndex: 0,
+            min: 0,
+            max: 400
+        }, {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 1,
+            dimension: 0,
+            min: 0,
+            max: 61
+        }],
+
+
+        title: [{
+            left: 'center',
+            text: 'virtualDisk_write_average 虚拟磁盘写入数据速度 KBps'
+        }, {
+            top: '55%',
+            left: 'center',
+            text: 'virtualDisk_read_average 虚拟磁盘读取数据速度 KBps'
+        }],
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: [{
+            // data: dateList
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })()
+        }, {
+            // data: dateList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            gridIndex: 1
+        }],
+        yAxis: [{
+            splitLine: {show: false}
+        }, {
+            splitLine: {show: false},
+            gridIndex: 1
+        }],
+        grid: [{
+            bottom: '60%'
+        }, {
+            top: '60%'
+        }],
+        series: [{
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].virtualDisk_write_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+        }, {
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].virtualDisk_read_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            xAxisIndex: 1,
+            yAxisIndex: 1
+        }]
+    };
+
+
+    option4 = {
+        // Make gradient line here
+        visualMap: [{
+            show: false,
+            type: 'continuous',
+            seriesIndex: 0,
+            min: 0,
+            max: 400
+        }, {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 1,
+            dimension: 0,
+            min: 0,
+            max: 61
+        }],
+
+
+        title: [{
+            left: 'center',
+            text: 'datastore_maxTotalLatency_latest 数据存储中最长的滞后时间'
+        }, {
+            top: '55%',
+            left: 'center',
+            text: 'cpu_usage_average CPU使用率'
+        }],
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: [{
+            // data: dateList
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })()
+        }, {
+            // data: dateList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            gridIndex: 1
+        }],
+        yAxis: [{
+            splitLine: {show: false}
+        }, {
+            splitLine: {show: false},
+            gridIndex: 1
+        }],
+        grid: [{
+            bottom: '60%'
+        }, {
+            top: '60%'
+        }],
+        series: [{
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].datastore_maxTotalLatency_latest));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+        }, {
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].cpu_usage_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            xAxisIndex: 1,
+            yAxisIndex: 1
+        }]
+    };
+
+
+    option5 = {
+        // Make gradient line here
+        visualMap: [{
+            show: false,
+            type: 'continuous',
+            seriesIndex: 0,
+            min: 0,
+            max: 400
+        }, {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 1,
+            dimension: 0,
+            min: 0,
+            max: 61
+        }],
+
+
+        title: [{
+            left: 'center',
+            text: 'mem_usage_average 内存利用率'
+        }, {
+            top: '55%',
+            left: 'center',
+            text: 'net_usage_average 网络利用率'
+        }],
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: [{
+            // data: dateList
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })()
+        }, {
+            // data: dateList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            gridIndex: 1
+        }],
+        yAxis: [{
+            splitLine: {show: false}
+        }, {
+            splitLine: {show: false},
+            gridIndex: 1
+        }],
+        grid: [{
+            bottom: '60%'
+        }, {
+            top: '60%'
+        }],
+        series: [{
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].mem_usage_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+        }, {
+            type: 'line',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].net_usage_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            xAxisIndex: 1,
+            yAxisIndex: 1
+        }]
+    };
+
+
+    option6 = {
+        // Make gradient line here
+        visualMap: [{
+            show: false,
+            type: 'continuous',
+            seriesIndex: 0,
+            min: 0,
+            max: 400
+        }, {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 1,
+            dimension: 0,
+            min: 0,
+            max: 61
+        }],
+
+
+        title: [{
+            left: 'center',
+            text: 'net_packetsRx_summation 网络接收到的数据包'
+        }, {
+            top: '55%',
+            left: 'center',
+            text: 'net_droppedRx_summation 网络接收丢包数'
+        }],
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: [{
+            // data: dateList
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })()
+        }, {
+            // data: dateList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            gridIndex: 1
+        }],
+        yAxis: [{
+            splitLine: {show: false}
+        }, {
+            splitLine: {show: false},
+            gridIndex: 1
+        }],
+        grid: [{
+            bottom: '60%'
+        }, {
+            top: '60%'
+        }],
+        series: [{
+            type: 'bar',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].net_packetsRx_summation));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+        }, {
+            type: 'bar',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].net_droppedRx_summation));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            xAxisIndex: 1,
+            yAxisIndex: 1
+        }]
+    };
+
+
+    option7 = {
+        // Make gradient line here
+        visualMap: [{
+            show: false,
+            type: 'continuous',
+            seriesIndex: 0,
+            min: 0,
+            max: 400
+        }, {
+            show: false,
+            type: 'continuous',
+            seriesIndex: 1,
+            dimension: 0,
+            min: 0,
+            max: 61
+        }],
+
+
+        title: [{
+            left: 'center',
+            text: 'net_bytesRx_average 网络接收速度 单位KBps'
+        }, {
+            top: '55%',
+            left: 'center',
+            text: 'net_bytesTx_average 网络传输速度 单位KBps'
+        }],
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis: [{
+            // data: dateList
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })()
+        }, {
+            // data: dateList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(result[i].date_str);
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            gridIndex: 1
+        }],
+        yAxis: [{
+            splitLine: {show: false}
+        }, {
+            splitLine: {show: false},
+            gridIndex: 1
+        }],
+        grid: [{
+            bottom: '60%'
+        }, {
+            top: '60%'
+        }],
+        series: [{
+            type: 'bar',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].net_bytesRx_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+        }, {
+            type: 'bar',
+            showSymbol: false,
+            // data: valueList,
+            data:(function(){
+                var courses = [];
+                $.ajax({
+                    type:"GET",
+                    url:"stat?opt=device",
+                    dataType:'json',
+                    async:false,
+                    success:function(result) {
+                        for(var i=0;i<result.length; i++){
+                            courses.push(parseFloat(result[i].net_bytesTx_average));
+                        }
+                    }
+                })
+                return courses;
+            })(),
+            xAxisIndex: 1,
+            yAxisIndex: 1
+        }]
+    };
+
+    // ------------------------ 渐变图  性能指标  end------------------------
+
+
+
+
+    // var weatherIcons = {
+    //     'Sunny': './data/asset/img/weather/sunny_128.png',
+    //     'Cloudy': './data/asset/img/weather/cloudy_128.png',
+    //     'Showers': './data/asset/img/weather/showers_128.png'
+    // };
+    //
+    // var seriesLabel = {
+    //     normal: {
+    //         show: true,
+    //         textBorderColor: '#333',
+    //         textBorderWidth: 2
+    //     }
+    // }
+    //
+    // option8 = {
+    //     title: {
+    //         text: 'Wheater Statistics'
+    //     },
+    //     tooltip: {
+    //         trigger: 'axis',
+    //         axisPointer: {
+    //             type: 'shadow'
+    //         }
+    //     },
+    //     legend: {
+    //         data: ['City Alpha', 'City Beta', 'City Gamma']
+    //     },
+    //     grid: {
+    //         left: 100
+    //     },
+    //     toolbox: {
+    //         show: true,
+    //         feature: {
+    //             saveAsImage: {}
+    //         }
+    //     },
+    //     xAxis: {
+    //         type: 'value',
+    //         name: 'Days',
+    //         axisLabel: {
+    //             formatter: '{value}'
+    //         }
+    //     },
+    //     yAxis: {
+    //         type: 'category',
+    //         inverse: true,
+    //         data: ['Sunny', 'Cloudy', 'Showers'],
+    //         axisLabel: {
+    //             formatter: function (value) {
+    //                 return '{' + value + '| }\n{value|' + value + '}';
+    //             },
+    //             margin: 20,
+    //             rich: {
+    //                 value: {
+    //                     lineHeight: 30,
+    //                     align: 'center'
+    //                 },
+    //                 Sunny: {
+    //                     height: 40,
+    //                     align: 'center',
+    //                     backgroundColor: {
+    //                         image: weatherIcons.Sunny
+    //                     }
+    //                 },
+    //                 Cloudy: {
+    //                     height: 40,
+    //                     align: 'center',
+    //                     backgroundColor: {
+    //                         image: weatherIcons.Cloudy
+    //                     }
+    //                 },
+    //                 Showers: {
+    //                     height: 40,
+    //                     align: 'center',
+    //                     backgroundColor: {
+    //                         image: weatherIcons.Showers
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     },
+    //     series: [
+    //         {
+    //             name: 'City Alpha',
+    //             type: 'bar',
+    //             data: [165, 170, 30],
+    //             label: seriesLabel,
+    //             markPoint: {
+    //                 symbolSize: 1,
+    //                 symbolOffset: [0, '50%'],
+    //                 label: {
+    //                     normal: {
+    //                         formatter: '{a|{a}\n}{b|{b} }{c|{c}}',
+    //                         backgroundColor: 'rgb(242,242,242)',
+    //                         borderColor: '#aaa',
+    //                         borderWidth: 1,
+    //                         borderRadius: 4,
+    //                         padding: [4, 10],
+    //                         lineHeight: 26,
+    //                         // shadowBlur: 5,
+    //                         // shadowColor: '#000',
+    //                         // shadowOffsetX: 0,
+    //                         // shadowOffsetY: 1,
+    //                         position: 'right',
+    //                         distance: 20,
+    //                         rich: {
+    //                             a: {
+    //                                 align: 'center',
+    //                                 color: '#fff',
+    //                                 fontSize: 18,
+    //                                 textShadowBlur: 2,
+    //                                 textShadowColor: '#000',
+    //                                 textShadowOffsetX: 0,
+    //                                 textShadowOffsetY: 1,
+    //                                 textBorderColor: '#333',
+    //                                 textBorderWidth: 2
+    //                             },
+    //                             b: {
+    //                                 color: '#333'
+    //                             },
+    //                             c: {
+    //                                 color: '#ff8811',
+    //                                 textBorderColor: '#000',
+    //                                 textBorderWidth: 1,
+    //                                 fontSize: 22
+    //                             }
+    //                         }
+    //                     }
+    //                 },
+    //                 data: [
+    //                     {type: 'max', name: 'max days: '},
+    //                     {type: 'min', name: 'min days: '}
+    //                 ]
+    //             }
+    //         },
+    //         {
+    //             name: 'City Beta',
+    //             type: 'bar',
+    //             label: seriesLabel,
+    //             data: [150, 105, 110]
+    //         },
+    //         {
+    //             name: 'City Gamma',
+    //             type: 'bar',
+    //             label: seriesLabel,
+    //             data: [220, 82, 63]
+    //         }
+    //     ]
+    // };
+
+    // -----------------------------
+    option8 = {
+        title : {
+            text: '各设备出现故障警告的次数',
+            subtext: '纯属虚构',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: ['设备id：2400','设备id：7361','设备id：7363']
+        },
+        series : [
+            {
+                name: '访问来源',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '50%'],
+                data:[
+                    {value:335, name:'设备id：2400'},
+                    {value:310, name:'设备id：7361'},
+                    {value:234, name:'设备id：7363'}
+                ],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+
+
+
+
+    // ------------------------------
+
+    var data = [
+        [1, 100],
+        [2, 69.0867438907515],
+        [3, 32.73769323941385],
+        [6, 4.497349533254043],
+        [11, 2.741038050778312],
+        [15, 3.756733112063831],
+        [19, 3.9203199862104574],
+        [25, 2.5522393804068773],
+        [28, 5.927083308349031],
+        [30, 9.732716919865183],
+        [33, 6.114828751997062],
+        [38, 3.42122803490577],
+        [44, 2.8320064134861997],
+        [48, 4.662818689261028],
+        [53, 3.643136073050456],
+        [56, 6.767463635982621],
+        [57, 57.78092505161458],
+        [58, 57.97831220555592],
+        [59, 94.48512312321348],
+        [60, 133.74206381729667]
+    ];
+
+    // See https://github.com/ecomfe/echarts-stat
+    var myRegression = ecStat.regression('polynomial', data, 6);
+
+    myRegression.points.sort(function(a, b) {
+        return a[0] - b[0];
+    });
+
+    option9 = {
+        title: {
+            text: '故障率曲线',
+            subtext: 'By 杨正',
+            sublink: 'https://github.com/ecomfe/echarts-stat',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        xAxis: {
+            type: 'value',
+            splitLine: {
+                lineStyle: {
+                    type: 'dashed'
+                }
+            },
+        },
+        yAxis: {
+            type: 'value',
+            min: 1.5,
+            splitLine: {
+                lineStyle: {
+                    type: 'dashed'
+                }
+            },
+        },
+        series: [{
+            name: 'scatter',
+            type: 'scatter',
+            label: {
+                emphasis: {
+                    show: true,
+                    position: 'left',
+                    textStyle: {
+                        color: 'blue',
+                        fontSize: 16
+                    }
+                }
+            },
+            data: data
+        }, {
+            name: 'line',
+            type: 'line',
+            showSymbol: false,
+            data: myRegression.points,
+            markPoint: {
+                itemStyle: {
+                    normal: {
+                        color: 'transparent'
+                    }
+                },
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'left',
+                        formatter: myRegression.expression,
+                        textStyle: {
+                            color: '#333',
+                            fontSize: 14
+                        }
+                    }
+                },
+                data: [{
+                    coord: myRegression.points[myRegression.points.length - 1]
+                }]
+            }
+        }]
+    };
+
+
+
+    option10 = {
+        tooltip : {
+            formatter: "{a} <br/>{b} : {c}%"
+        },
+        toolbox: {
+            feature: {
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        series: [
+            {
+                name: '业务指标',
+                type: 'gauge',
+                detail: {formatter:'{value}%'},
+                data: [{value: 60, name: '2400: 设备稳定期：正常'}]
+            }
+        ]
+    };
+
+    window.setInterval(function () {
+            var courses = [];
+            var faults = [];
+            // return [{value: 50, name: '设备2400状态'}];
+            $.ajax({
+                type:"GET",
+                url:"stat?opt=liftcycle",
+                dataType:'json',
+                async:false,
+                success:function(result) {
+
+
+                    for(var i=0;i<result.length; i++){
+                        if(result[i].device_id == '2400') {
+                            if (result[i].leftcycle == '0') {
+                                courses.push({value: 60, name: "2400: 设备稳定期：正常"})
+                            } else if (result[i].leftcycle =='1') {
+                                faults.push({value: 82, name: "2400: 设备衰退期：故障"})
+                            }
+                        } else {
+                            continue
+                        }
+                    }
+                }
+            })
+
+            if (faults.length > 0) {
+                option10.series[0].data[0].value = faults[0].value
+                option10.series[0].data[0].name = faults[0].name
+                myChart10.setOption(option10);
+                alert("设备2400出现故障，请及时处理！！！")
+            } else {
+                option10.series[0].data[0].value = courses[0].value
+                option10.series[0].data[0].name = courses[0].name
+                myChart10.setOption(option10);
+            }
+    },5000);
+
+    // 使用刚指定的配置项和数据显示图表。
+
+    // 性能指标监控图
+    myChart1.setOption(option1);
+    myChart2.setOption(option2);
+    myChart3.setOption(option3);
+    myChart4.setOption(option4);
+    myChart5.setOption(option5);
+    myChart6.setOption(option6);
+    myChart7.setOption(option7);
+
+    // 故障比例图
+    myChart8.setOption(option8);
+
+    // 故障率曲线图
+    myChart9.setOption(option9);
+
+    // 故障预测
+    myChart10.setOption(option10);
+</script>
+</body>
+</html>
